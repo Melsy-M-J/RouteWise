@@ -3,32 +3,41 @@ import networkx as nx
 import matplotlib.pyplot as plt
 
 
-def draw_road_network(road_network, positions, path=None, title="Road Network"):
+def draw_road_network(
+    road_network,
+    positions,
+    path=None,
+    title="Road Network",
+    show=True
+):
 
-    # Create a drawing area
-    plt.figure(figsize=(12, 9))
+    # Create the figure and drawing area
+    fig, ax = plt.subplots(figsize=(12, 9))
 
-    # Draw all roads in grey
+    # Draw all roads
     nx.draw_networkx_edges(
         road_network,
         positions,
         edge_color="lightgray",
-        width=1.5
+        width=1.5,
+        ax=ax
     )
 
-    # Draw all intersections in blue
+    # Draw all intersections
     nx.draw_networkx_nodes(
         road_network,
         positions,
         node_color="skyblue",
-        node_size=350
+        node_size=350,
+        ax=ax
     )
 
     # Display intersection labels
     nx.draw_networkx_labels(
         road_network,
         positions,
-        font_size=7
+        font_size=7,
+        ax=ax
     )
 
     # Display road weights
@@ -41,46 +50,50 @@ def draw_road_network(road_network, positions, path=None, title="Road Network"):
         road_network,
         positions,
         edge_labels=edge_labels,
-        font_size=6
+        font_size=6,
+        ax=ax
     )
 
-    # Highlight the shortest path, if one exists
+    # Highlight the shortest path
     if path:
 
         path_edges = list(zip(path, path[1:]))
 
-        # Highlight the route in red
         nx.draw_networkx_edges(
             road_network,
             positions,
             edgelist=path_edges,
             edge_color="red",
-            width=3.5
+            width=3.5,
+            ax=ax
         )
 
-        # Highlight the starting intersection in green
+        # Starting point
         nx.draw_networkx_nodes(
             road_network,
             positions,
             nodelist=[path[0]],
             node_color="green",
-            node_size=450
+            node_size=450,
+            ax=ax
         )
 
-        # Highlight the destination in orange
+        # Destination
         nx.draw_networkx_nodes(
             road_network,
             positions,
             nodelist=[path[-1]],
             node_color="orange",
-            node_size=450
+            node_size=450,
+            ax=ax
         )
 
-    # Add title and display the graph
-    plt.title(title, fontsize=16)
+    ax.set_title(title, fontsize=16)
+    ax.axis("off")
 
-    plt.axis("off")
+    fig.tight_layout()
 
-    plt.tight_layout()
+    if show:
+        plt.show()
 
-    plt.show()
+    return fig

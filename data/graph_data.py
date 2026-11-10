@@ -40,8 +40,8 @@ def create_road_network(rows=8, cols=8, seed=42):
 def update_road_cost(road_network, graph, node1, node2, new_weight):
 
     # Road costs must be positive
-    if new_weight <= 0:
-        raise ValueError("Road cost must be greater than zero.")
+    if new_weight < 1.00:
+        raise ValueError("Road cost must be at least one.")
 
     # Check whether the road exists
     if not road_network.has_edge(node1, node2):
