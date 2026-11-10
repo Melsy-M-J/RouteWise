@@ -314,6 +314,9 @@ else:
 
             st.pyplot(fig)
             plt.close(fig)
+            legend_fig = draw_shared_legend()
+            st.pyplot(legend_fig, use_container_width=True)
+            plt.close(legend_fig)
 
         else:
             st.error("No route is available between these intersections.")
