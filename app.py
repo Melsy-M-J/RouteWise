@@ -12,7 +12,10 @@ from data.graph_data import (
 from algorithms.dijkstra import dijkstra
 from algorithms.astar import astar
 
-from visualization.graph_visualizer import draw_road_network
+from visualization.graph_visualizer import (
+    draw_road_network,
+    draw_shared_legend
+)
 
 
 # ==========================================
@@ -237,11 +240,12 @@ else:
     # VISUALIZATION
     # ======================================
 
-        
+    
     if algorithm_choice == "Compare Both":
 
         if dijkstra_result["path"] and astar_result["path"]:
 
+            # Display both graphs side by side
             col1, col2 = st.columns(2)
 
             with col1:
@@ -251,6 +255,7 @@ else:
                     road_network,
                     positions,
                     path=dijkstra_result["path"],
+                    explored_nodes=dijkstra_result["explored_nodes"],
                     title="Dijkstra Algorithm",
                     show=False
                 )
@@ -270,6 +275,7 @@ else:
                     road_network,
                     positions,
                     path=astar_result["path"],
+                    explored_nodes=astar_result["explored_nodes"],
                     title="A* Algorithm",
                     show=False
                 )
@@ -282,6 +288,14 @@ else:
                     f"Explored Nodes: {len(astar_result['explored_nodes'])}"
                 )
 
+            # Separate legend section BELOW both graphs
+            st.divider()
+            st.subheader("Graph Legend")
+
+            legend_fig = draw_shared_legend()
+            st.pyplot(legend_fig, use_container_width=True)
+            plt.close(legend_fig)
+
         else:
             st.error("One or both algorithms could not find a route.")
 
@@ -293,6 +307,7 @@ else:
                 road_network,
                 positions,
                 path=selected_result["path"],
+                explored_nodes=selected_result["explored_nodes"],
                 title=selected_title,
                 show=False
             )
