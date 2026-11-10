@@ -237,29 +237,72 @@ else:
     # VISUALIZATION
     # ======================================
 
-    if selected_result["path"]:
+        
+    if algorithm_choice == "Compare Both":
 
-        fig = draw_road_network(
-            road_network,
-            positions,
-            path=selected_result["path"],
-            title=selected_title,
-            show=False
-        )
+        if dijkstra_result["path"] and astar_result["path"]:
 
-        st.pyplot(fig)
+            col1, col2 = st.columns(2)
 
-        plt.close(fig)
+            with col1:
+                st.subheader("Dijkstra Shortest Path")
 
-        st.write("### Shortest Route")
+                fig1 = draw_road_network(
+                    road_network,
+                    positions,
+                    path=dijkstra_result["path"],
+                    title="Dijkstra Algorithm",
+                    show=False
+                )
 
-        st.code(
-            " → ".join(str(node) for node in selected_result["path"])
-        )
+                st.pyplot(fig1)
+                plt.close(fig1)
+
+                st.caption(
+                    f"Path Cost: {dijkstra_result['cost']:.2f} | "
+                    f"Explored Nodes: {len(dijkstra_result['explored_nodes'])}"
+                )
+
+            with col2:
+                st.subheader("A* Shortest Path")
+
+                fig2 = draw_road_network(
+                    road_network,
+                    positions,
+                    path=astar_result["path"],
+                    title="A* Algorithm",
+                    show=False
+                )
+
+                st.pyplot(fig2)
+                plt.close(fig2)
+
+                st.caption(
+                    f"Path Cost: {astar_result['cost']:.2f} | "
+                    f"Explored Nodes: {len(astar_result['explored_nodes'])}"
+                )
+
+        else:
+            st.error("One or both algorithms could not find a route.")
 
     else:
 
-        st.error("No route is available between these intersections.")
+        if selected_result["path"]:
+
+            fig = draw_road_network(
+                road_network,
+                positions,
+                path=selected_result["path"],
+                title=selected_title,
+                show=False
+            )
+
+            st.pyplot(fig)
+            plt.close(fig)
+
+        else:
+            st.error("No route is available between these intersections.")
+
 
 
 # ==========================================
