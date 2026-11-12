@@ -1,4 +1,4 @@
-
+import pandas as pd
 import streamlit as st
 import time
 import matplotlib.pyplot as plt
@@ -293,7 +293,7 @@ else:
             st.subheader("Graph Legend")
 
             legend_fig = draw_shared_legend()
-            st.pyplot(legend_fig, use_container_width=True)
+            st.pyplot(legend_fig, width='stretch')
             plt.close(legend_fig)
 
         else:
@@ -315,11 +315,114 @@ else:
             st.pyplot(fig)
             plt.close(fig)
             legend_fig = draw_shared_legend()
-            st.pyplot(legend_fig, use_container_width=True)
+            st.pyplot(legend_fig, width='stretch')
             plt.close(legend_fig)
 
         else:
             st.error("No route is available between these intersections.")
+
+
+    # ==========================================
+    # PERFORMANCE COMPARISON
+    # ==========================================
+
+    st.divider()
+    st.header("Algorithm Performance Comparison")
+
+    dijkstra_nodes = len(dijkstra_result["explored_nodes"])
+    astar_nodes = len(astar_result["explored_nodes"])
+
+    # Calculate percentage reduction in explored nodes
+    if dijkstra_nodes > 0:
+        reduction = (
+            (dijkstra_nodes - astar_nodes)
+            / dijkstra_nodes
+        ) * 100
+    else:
+        reduction = 0
+
+    # Display explored-node comparison
+    st.subheader("1. Explored Nodes Comparison")
+
+    node_col1, node_col2 = st.columns(2)
+
+    with node_col1:
+        st.metric("Dijkstra Explored Nodes", dijkstra_nodes)
+
+    with node_col2:
+        st.metric("A* Explored Nodes", astar_nodes)
+
+    st.bar_chart(
+        {
+            "Algorithm": ["Dijkstra", "A*"],
+            "Explored Nodes": [dijkstra_nodes, astar_nodes]
+        },
+        x="Algorithm",
+        y="Explored Nodes"
+    )
+
+    if reduction > 0:
+        st.success(
+            f"A* explored {reduction:.2f}% fewer nodes than Dijkstra."
+        )
+    elif reduction < 0:
+        st.info(
+            f"A* explored {abs(reduction):.2f}% more nodes than Dijkstra."
+        )
+    else:
+        st.info("Both algorithms explored the same number of nodes.")
+
+    # Execution-time comparison
+    st.subheader("2. Execution Time Comparison")
+
+    time_col1, time_col2 = st.columns(2)
+
+    with time_col1:
+        st.metric(
+            "Dijkstra Execution Time",
+            f"{dijkstra_time:.6f} ms"
+        )
+
+    with time_col2:
+        st.metric(
+            "A* Execution Time",
+            f"{astar_time:.6f} ms"
+        )
+
+    st.bar_chart(
+        {
+            "Algorithm": ["Dijkstra", "A*"],
+            "Execution Time (ms)": [
+                dijkstra_time,
+                astar_time
+            ]
+        },
+        x="Algorithm",
+        y="Execution Time (ms)"
+    )
+
+    # Shortest-path cost comparison
+    st.subheader("3. Shortest Path Cost Comparison")
+
+    st.write(
+        f"Dijkstra Path Cost: {dijkstra_result['cost']:.2f}"
+    )
+
+    st.write(
+        f"A* Path Cost: {astar_result['cost']:.2f}"
+    )
+
+    if abs(
+        dijkstra_result["cost"] - astar_result["cost"]
+    ) < 1e-9:
+        st.success(
+            "Both algorithms found routes with the same optimal cost."
+        )
+    else:
+        st.warning(
+            "The algorithms returned different path costs. "
+            "Investigate their correctness before interpreting performance."
+        )
 
 
 
